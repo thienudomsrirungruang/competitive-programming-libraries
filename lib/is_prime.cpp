@@ -30,34 +30,27 @@ template<typename A, typename B, typename... C> void dbg_out(A H, B G, C... T) {
 #define debug(...)
 #endif
 
-#include <modint_crude.cpp>
-using mint = ModInt<int(1e9 + 7)>;
-
-using cnum = mint;
-const int N = 2e5 + 20;
-cnum fact[N];
-cnum inv_fact[N];
-void precomp(){ // don't forget to call precomp()!
-    fact[0] = cnum(1);
-    for(int i = 1; i < N; i++){
-        fact[i] = fact[i-1] * i;
-    }
-    for(int i = 0; i < N; i++){
-        inv_fact[i] = fact[i].inv();
-    }
+// source: kactl
+using ull = unsigned long long;
+ull modmul(ull a, ull b, ull M) {
+    ll ret = a * b - M * ull(1.L / M * a * b);
+    return ret + M * (ret < 0) - M * (ret >= (ll)M);
 }
-
-cnum ncr(ll n, ll r){
-    assert(n >= 0);
-    if(r < 0 || r > n) return 0;
-    return fact[n] * inv_fact[r] * inv_fact[n-r];
-}
-
-cnum ncr_crude(ll n, ll r){
-    cnum ans = cnum(1);
-    for(int i = 0; i < r; i++){
-        ans = ans * cnum(i+1).inv();
-        ans = ans * n-i;
-    }
+ull modpow(ull b, ull e, ull mod) {
+    ull ans = 1;
+    for (; e; b = modmul(b, b, mod), e /= 2)
+        if (e & 1) ans = modmul(ans, b, mod);
     return ans;
+}
+bool is_prime(ull n) {
+    if (n < 2 || n % 6 % 4 != 1) return (n | 1) == 3;
+    ull A[] = {2, 325, 9375, 28178, 450775, 9780504, 1795265022},
+        s = __builtin_ctzll(n-1), d = n >> s;
+    for (ull a : A) {   // ^ count trailing zeroes
+        ull p = modpow(a%n, d, n), i = s;
+        while (p != 1 && p != n - 1 && a % n && i--)
+            p = modmul(p, p, n);
+        if (p != n-1 && i != s) return 0;
+    }
+    return 1;
 }
