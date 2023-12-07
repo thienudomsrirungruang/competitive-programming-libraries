@@ -129,7 +129,7 @@ struct ModInt{
 };
 ostream& operator<<(ostream &os, ModInt x) { return os << x.val(); }
 istream& operator>>(istream &is, ModInt &x) { ll p; is >> p; x = ModInt(p); return is; }
- 
+
  
 const uint64_t FIXED_RANDOM = std::chrono::steady_clock::now().time_since_epoch().count();
  

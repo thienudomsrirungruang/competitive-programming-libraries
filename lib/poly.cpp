@@ -24,6 +24,7 @@ struct Poly{
     vector<T> coeff;
 
     T & operator[] (int x) {
+        while(x >= (int) coeff.size()) coeff.push_back(0); // optional
         return coeff[x];
     }
 

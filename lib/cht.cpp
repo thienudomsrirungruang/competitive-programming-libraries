@@ -33,7 +33,7 @@ ll divide(ll a, ll b) {
     return a / b - ((a ^ b) < 0 && a % b);
 }
 
-// returns floor(x), x is where lines intercept
+// returns floor(x), x is where lines intersect
 ll line_intersection(Line l1, Line l2){
     assert(l1.m != l2.m);
     return divide(l2.c-l1.c, l1.m-l2.m);
