@@ -35,6 +35,7 @@ using uint = unsigned int;
 using u16 = uint16_t;
 
 // https://codeforces.com/blog/entry/103785?#comment-922682
+// checked with https://judge.yosupo.jp/problem/nim_product_64
 const int S = 16;
 u16 pw[1<<S];
 u16 lg[1<<S];
@@ -109,7 +110,7 @@ istream& operator>>(istream &is, Nimber &x) { ull p; is >> p; x = Nimber(p); ret
 void precomp_log() {
     pw[0] = 1;
     lg[1] = 0;
-    Nimber base = Nimber((1ULL<<16)-1);
+    Nimber base = Nimber((1ULL<<S)-1);
     for(int i = 1; i < (1<<S)-1; i++) {
         pw[i] = (Nimber(pw[i-1]) * base).val;
         lg[pw[i]] = i;
