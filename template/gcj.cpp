@@ -2,19 +2,20 @@
 
 using namespace std;
 
-#define u_map unordered_map
-#define u_set unordered_set
-#define u_multiset unordered_multiset
-
 using ll = long long;
-using vvi = vector<vector<int>>;
 using vi = vector<int>;
-using vvll = vector<vector<long long>>;
+using vvi = vector<vector<int>>;
 using vll = vector<long long>;
+using vvll = vector<vector<long long>>;
+using vb = vector<bool>;
+using vvb = vector<vector<bool>>;
 using vd = vector<double>;
 using vvd = vector<vector<double>>;
 using pii = pair<int, int>;
 using vpii = vector<pair<int, int>>;
+
+using uint = unsigned int;
+using ull = unsigned long long;
 
 template<typename C> struct rge{C l, r;};
 template<typename C> rge<C> range(C i, C j) { return rge<C>{i, j}; }

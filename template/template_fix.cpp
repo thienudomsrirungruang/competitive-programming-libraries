@@ -19,7 +19,7 @@ using ull = unsigned long long;
 
 template<typename C> struct rge{C l, r;};
 template<typename C> rge<C> range(C i, C j) { return rge<C>{i, j}; }
-template<typename C> ostream& operator<<(ostream &os, rge<C> &r) { os << '{'; for(auto it = r.l; it != r.r; it++) os << "," + (it == r.l) << *it; os << '}'; return os; }
+template<typename C> ostream& operator<<(ostream &os, rge<C> r) { os << '{'; for(auto it = r.l; it != r.r; it++) os << "," + (it == r.l) << *it; os << '}'; return os; }
 template<typename A, typename B> ostream& operator<<(ostream &os, const pair<A, B> &p) { return os << '{' << p.first << "," << p.second << '}'; }
 template<typename T_container, typename T = typename enable_if<!is_same<T_container, string>::value, typename T_container::value_type>::type> ostream& operator<<(ostream &os, const T_container &v) { os << '{'; string sep; for (const T &x : v) os << sep << x, sep = ","; return os << '}'; }
 void dbg_out() { cerr << ']' << endl; }
