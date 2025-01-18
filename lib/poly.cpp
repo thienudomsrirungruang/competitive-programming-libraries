@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include <modint_crude.cpp>
+#include "modint_crude.cpp"
 
 using namespace std;
 
@@ -59,6 +59,15 @@ struct Poly{
         coeff.resize(sz);
     }
 
+    // Removes trailing zeroes from the coefficients.
+    void strip(bool keep_zero = true) {
+        int i = (int) coeff.size();
+        while(i >= (keep_zero ? 2 : 1) && coeff[i-1] == 0) {
+            i--;
+        }
+        coeff.erase(coeff.begin() + i, coeff.end());
+    }
+
     Poly<T> to_size(int sz) const {
         Poly<T> res(*this);
         res.resize(sz);
@@ -72,7 +81,7 @@ struct Poly{
 
     /* Trivial ops */
     
-    Poly<T> operator+(Poly<T> other){
+    Poly<T> operator+(Poly<T> other) const {
         Poly<T> res(max(size(), other.size()));
         for(int i = 0; i < res.size(); i++){
             res[i] = ((size() > i) ? coeff[i] : T(0)) + ((other.size() > i) ? other[i] : T(0));
@@ -89,7 +98,7 @@ struct Poly{
         }
     }
 
-    Poly<T> operator-(Poly<T> other){
+    Poly<T> operator-(Poly<T> other) const {
         Poly<T> res(max(size(), other.size()));
         for(int i = 0; i < res.size(); i++){
             res[i] = ((size() > i) ? coeff[i] : T(0)) - ((other.size() > i) ? other[i] : T(0));
@@ -168,6 +177,7 @@ struct Poly{
     // This means all nonzero coefficients of exponents < n are zero under the field.
     // The length of the returned polynomial will be the smallest power of two >= n.
     // Explanation: https://codeforces.com/blog/entry/12513 (editorial for div1E)
+    // O(n log n)
     Poly<T> inv(int n) const {
         assert(coeff.size() > 0);
         assert(coeff[0] != T(0));
@@ -185,6 +195,7 @@ struct Poly{
     // The length of the returned polynomial will be at least n.
     // Explanation: https://codeforces.com/blog/entry/12513 (editorial for div1E)
     // If using mod-ints, please check that the square root exists before calling.
+    // O(n log n)
     Poly<T> sqrt(int n) const {
         int i;
         for(i = 0; i < coeff.size() && coeff[i] == 0; i++) {}
@@ -205,6 +216,77 @@ struct Poly{
         Poly<T> padded_res = Poly<T>(padded_coeff);
         return padded_res;
     }
+
+    // A.div(B) computes D such that A = B * D + R, deg(R) < deg(B).
+    // O(n log n)
+    Poly<T> div(Poly<T> other) const {
+        Poly<T> self = *this;
+        self.strip();
+        other.strip();
+        int n = self.coeff.size() - 1;
+        int m = other.coeff.size() - 1;
+        int d = n-m;
+        if(d < 0) {
+            return Poly(vector<T>{0});
+        }
+        reverse(self.coeff.begin(), self.coeff.end());
+        reverse(other.coeff.begin(), other.coeff.end());
+        self.resize(d+1);
+        other.resize(d+1);
+        other = other.inv(d+1);
+        Poly<T> result = self * other;
+        result.resize(d+1);
+        reverse(result.coeff.begin(), result.coeff.end());
+        return result;
+    }
+
+    // A.mod(B) computes R such that A = B * D + R, deg(R) < deg(B).
+    // O(n log n)
+    Poly<T> mod(Poly<T> other, bool resize = true) const {
+        Poly<T> p = *this - (other * this->div(other));
+        if(resize) {
+            p.resize(other.size() - 1);
+        }
+        return p;
+    }
+
+    pair<Poly<T>, Poly<T>> divmod(Poly<T> other, bool resize = true) const {
+        Poly<T> d = this->div(other);
+        Poly<T> p = *this - (other * d);
+        if(resize) {
+            p.resize(other.size() - 1);
+        }
+        return {d, p};
+    }
+
+    // Returns a vector of F[x], given a vector of x.
+    // O(n log^2 n) where n = max(deg(F), pts.size())
+    vector<T> multieval(vector<T> pts) const {
+        int m = pts.size();
+        if(m == 0) {
+            return vector<T>{};
+        }
+        // "efficient and easy segment trees"
+        vector<Poly<T>> v(2*m);
+        for(int i = 0; i < m; i++) {
+            v[m+i] = Poly(vector<T>{-pts[i], 1});
+        }
+        for(int i = m-1; i >= 0; i--) {
+            v[i] = v[2*i] * v[2*i+1];
+        }
+        // top down mod
+        v[1] = this->mod(v[1]);
+        for(int i = 2; i < 2*m; i++) {
+            v[i] = v[i>>1].mod(v[i]);
+        }
+        vector<T> result(m);
+        for(int i = 0; i < m; i++) {
+            result[i] = v[i+m][0];
+        }
+        return result;
+    }
+
+    ///////////////////
     
     private:
 
@@ -369,5 +451,3 @@ struct Poly{
 };
 
 template<typename T> ostream& operator<<(ostream &os, Poly<T> x) { return os << "<Poly " << x.coeff << ">"; }
-
-/* TODO: Runtime arbitrary mod */

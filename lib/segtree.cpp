@@ -2,19 +2,20 @@
 
 using namespace std;
 
-#define u_map unordered_map
-#define u_set unordered_set
-#define u_multiset unordered_multiset
-
 using ll = long long;
-using vvi = vector<vector<int>>;
 using vi = vector<int>;
-using vvll = vector<vector<long long>>;
+using vvi = vector<vector<int>>;
 using vll = vector<long long>;
+using vvll = vector<vector<long long>>;
+using vb = vector<bool>;
+using vvb = vector<vector<bool>>;
 using vd = vector<double>;
 using vvd = vector<vector<double>>;
 using pii = pair<int, int>;
 using vpii = vector<pair<int, int>>;
+
+using uint = unsigned int;
+using ull = unsigned long long;
 
 template<typename C> struct rge{C l, r;};
 template<typename C> rge<C> range(C i, C j) { return rge<C>{i, j}; }
@@ -30,34 +31,57 @@ template<typename A, typename B, typename... C> void dbg_out(A H, B G, C... T) {
 #define debug(...)
 #endif
 
-#include <modint_crude.cpp>
-using mint = ModInt<int(1e9 + 7)>;
+struct Node {
+    Node *l, *r;
+    int lo, hi;
 
-using cnum = mint;
-const int N = 2e5 + 20;
-cnum fact[N];
-cnum inv_fact[N];
-void precomp(){ // don't forget to call precomp()!
-    fact[0] = cnum(1);
-    for(int i = 1; i < N; i++){
-        fact[i] = fact[i-1] * i;
+    void refresh() {
+        // ...
     }
-    for(int i = 0; i < N; i++){
-        inv_fact[i] = fact[i].inv();
-    }
-}
 
-cnum ncr(ll n, ll r){
-    assert(n >= 0);
-    if(r < 0 || r > n) return 0;
-    return fact[n] * inv_fact[r] * inv_fact[n-r];
-}
-
-cnum ncr_crude(ll n, ll r){
-    cnum ans = cnum(1);
-    for(int i = 0; i < r; i++){
-        ans = ans * cnum(i+1).inv();
-        ans = ans * (n-i);
+    Node(int lo, int hi) : lo(lo), hi(hi) {
+        if(lo + 1 == hi) {
+            // ...
+        } else {
+            int mid = (lo + hi) / 2;
+            l = new Node(lo, mid);
+            r = new Node(mid, hi);
+            refresh();
+        }
     }
-    return ans;
+
+    int query(int L, int R) {
+        if(hi <= L || R <= lo) {
+            // ...
+            return 0;
+        }
+        if(L <= lo && hi <= R) {
+            // ...
+            return val;
+        }
+        // ...
+    }
+
+    void set(int L, int R, int x) {
+        if(hi <= L || R <= lo) {
+            return;
+        }
+        if(L <= lo && hi <= R) {
+            // ...
+            return;
+        }
+        // ...
+        l->set(L, R, x);
+        r->set(L, R, x);
+        refresh();
+    }
+};
+
+ostream& operator<<(ostream& os, Node *n) {
+    os << n->lo << ' ' << n->hi << endl;
+    if(n->lo + 1 < n->hi) {
+        os << n->l;
+        os << n->r;
+    }
+    return os;
 }
